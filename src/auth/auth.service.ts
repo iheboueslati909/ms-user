@@ -19,6 +19,9 @@ export class AuthService {
     async signUp(signupDto: SignUpDto) {
         const { name, email, password } = signupDto;
 
+        if ((!name) || (!email) || (!password)) 
+            throw new UnauthorizedException('Missing informations');
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await this.userModel.create({
             name,
