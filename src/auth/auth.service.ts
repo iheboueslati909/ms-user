@@ -7,6 +7,7 @@ import { SignUpDto } from './dto/signup.dto';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
+import { Role } from 'src/user/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -17,22 +18,23 @@ export class AuthService {
     ) { }
 
     async signUp(signupDto: SignUpDto) {
-        const { name, email, password } = signupDto;
+        const { name, email, password, roles } = signupDto;
 
         if ((!name) || (!email) || (!password)) 
             throw new UnauthorizedException('Missing informations');
-        
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await this.userModel.create({
             name,
             email,
             password: hashedPassword,
+            roles
         });
 
         await user.save();
 
         const token = await this.jwtService.sign(
-            { id: user.id },
+            { id: user.id , roles:user.roles},
             {
                 secret: this.configService.get('JWT_SECRET'),
                 expiresIn: this.configService.get('JWT_EXPIRES'),
@@ -54,7 +56,7 @@ export class AuthService {
         if (!passwordMatch)
             throw new UnauthorizedException('invalid email or password');
         const token = await this.jwtService.sign(
-            { id: user.id },
+            { id: user.id, roles:user.roles },
             {
                 secret: this.configService.get('JWT_SECRET'),
             },
