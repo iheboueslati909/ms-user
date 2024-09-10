@@ -27,7 +27,7 @@ let AuthService = class AuthService {
         this.configService = configService;
     }
     async signUp(signupDto) {
-        const { name, email, password } = signupDto;
+        const { name, email, password, roles } = signupDto;
         if ((!name) || (!email) || (!password))
             throw new common_1.UnauthorizedException('Missing informations');
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,9 +35,10 @@ let AuthService = class AuthService {
             name,
             email,
             password: hashedPassword,
+            roles
         });
         await user.save();
-        const token = await this.jwtService.sign({ id: user.id }, {
+        const token = await this.jwtService.sign({ id: user.id, roles: user.roles }, {
             secret: this.configService.get('JWT_SECRET'),
             expiresIn: this.configService.get('JWT_EXPIRES'),
         });
@@ -53,7 +54,7 @@ let AuthService = class AuthService {
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch)
             throw new common_1.UnauthorizedException('invalid email or password');
-        const token = await this.jwtService.sign({ id: user.id }, {
+        const token = await this.jwtService.sign({ id: user.id, roles: user.roles }, {
             secret: this.configService.get('JWT_SECRET'),
         });
         return { token };
