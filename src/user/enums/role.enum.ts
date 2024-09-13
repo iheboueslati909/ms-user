@@ -3,3 +3,4 @@ export enum Role {
     Manager ='manager',
     Admin = 'admin',
   }
+  //TODO "roleX_ConctextY"
