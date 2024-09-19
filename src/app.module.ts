@@ -1,22 +1,32 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+const ENV = process.env.NODE_ENV || 'dev';
+dotenv.config({ path: path.resolve(process.cwd(), `.env.${ENV}`) });
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
+      isGlobal: true, // Makes ConfigModule available globally
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/user'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: `mongodb://${configService.get('MONGO_HOST')}:${configService.get('MONGO_PORT')}/${configService.get('MONGO_DB_NAME')}`,
+      }),
+    }),
     UserModule,
-    AuthModule],
+    AuthModule,
+  ],
   controllers: [AppController],
-
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

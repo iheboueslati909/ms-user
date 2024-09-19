@@ -4,27 +4,25 @@ import { ConfigService } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  // Create the HTTP server to handle regular HTTP requests like @Get()
   const app = await NestFactory.create(AppModule);
-  
-  // Get the ConfigService after initializing the app
   const configService = app.get(ConfigService);
 
-  // Start the HTTP server on the desired port
-  const port = configService.get<number>('APP_PORT') || 3000;
-  await app.listen(port);
-  console.log(`HTTP server is running on http://localhost:${port}`);
-
-  // Create and run the microservice to handle @MessagePattern
+  const port = configService.get<number>('APP_PORT');
+  const host = configService.get<string>('APP_HOST');
+  
   const microservice = app.connectMicroservice({
     transport: Transport.TCP,
     options: {
-      host: '127.0.0.1',
+      host: host,
       port: port,
     },
   });
-
+  
+  await app.listen(port);
   await microservice.listen();
+
+  console.log("env = ", process.env.NODE_ENV , " host:port = " , host,":",port);
+
 }
 
 bootstrap();
