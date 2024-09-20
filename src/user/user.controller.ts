@@ -6,6 +6,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller('user')
 export class UserController {
@@ -37,5 +38,15 @@ export class UserController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
   return await this.userService.removeUser(+id);
+  }
+
+  @MessagePattern({ cmd: 'GET/USERS/ALL' })
+  getUserAll(data: any) {
+    return this.userService.findAllUsers();
+  }
+
+  @MessagePattern({ cmd: 'POST/USERS/CREATE' })
+  createUser(@Payload() createUserDto: CreateUserDto) {
+    return this.userService.createUsers(createUserDto);
   }
 }
