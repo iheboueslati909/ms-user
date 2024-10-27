@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { MessagePattern , Payload } from "@nestjs/microservices";
+import { GrpcMethod, MessagePattern , Payload } from "@nestjs/microservices";
 import { UserService } from './user/user.service';
 import { CreateUserDto } from './user/dto/create-user.dto';
 
@@ -11,9 +11,9 @@ export class AppController {
     private readonly userService: UserService
   ) {}
 
-  @Get("/")
-  getHello(): string {
-    return this.appService.getHello();
+  @GrpcMethod('HealthCheck', 'Check')
+  check(): { healthy: boolean } {
+    return { healthy: true };
   }
 
 }
