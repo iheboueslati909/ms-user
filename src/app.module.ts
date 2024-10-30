@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import * as dotenv from 'dotenv';
@@ -24,7 +23,6 @@ dotenv.config({ path: path.resolve(process.cwd(), `.env.${ENV}`) });
       }),
     }),
     UserModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,7 @@
 export enum Role {
-    User = 'artist',
-    Manager ='manager',
-    Admin = 'admin',
-  }
-  //TODO "roleX_ConctextY"
+  User = 'user',
+  Artist = 'artist',
+  Manager = 'manager',
+  Admin = 'admin',
+}
+//TODO "roleX_ConctextY"
