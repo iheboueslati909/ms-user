@@ -1,13 +1,11 @@
-import { Injectable ,UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable ,UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/user/entities/user.entity';
-import { SignUpDto } from './dto/signup.dto';
 import * as bcrypt from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
-import { Role } from 'src/user/enums/role.enum';
+import { LoginRequest, SignUpRequest } from 'src/proto/user-app';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +15,11 @@ export class AuthService {
         private configService: ConfigService,
     ) { }
 
-    async signUp(signupDto: SignUpDto) {
-        const { name, email, password, roles } = signupDto;
+    async signUp(signupRequest: SignUpRequest) {
+        const { name, email, password, roles } = signupRequest;
 
         if ((!name) || (!email) || (!password)) 
-            throw new UnauthorizedException('Missing informations');
+            throw new BadRequestException('Missing informations');
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await this.userModel.create({
@@ -43,8 +41,11 @@ export class AuthService {
         return { token };
     }
 
-    async login(loginDto: LoginDto) {
-        const { email, password } = loginDto;
+    async login(loginRequest: LoginRequest) {
+        const { email, password } = loginRequest;
+        if (!email || !password) {
+            throw new BadRequestException('missing informations');
+        }
         const user = await this.userModel.findOne({
             email,
         });
