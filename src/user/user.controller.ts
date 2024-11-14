@@ -1,13 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from './enums/role.enum';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { GrpcMethod, MessagePattern, Payload } from '@nestjs/microservices';
-import { CreateUserRequest, UpdateUserRequest, DeleteUserRequest, FindUserByIdRequest, Empty } from '../proto/user-app';
+import { CreateUserRequest, UpdateUserRequest, DeleteUserRequest, FindUserByIdRequest, Empty, UserResponse } from '../proto/user-app';
 
 @Controller('user')
 export class UserController {

@@ -1,10 +1,8 @@
 import { Injectable , NotFoundException} from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
-import { CreateUserRequest, UpdateUserRequest, DeleteUserRequest,UserResponse, FindUserByIdRequest, Empty } from '../proto/user-app';
+import { CreateUserRequest, UpdateUserRequest, DeleteUserRequest,UserResponse, FindUserByIdRequest, Empty, UserListResponse } from '../proto/user-app';
 import { Role as ProtoRole } from '../proto/user-app'; // Import the Role enum from proto
 
 @Injectable()
@@ -22,10 +20,10 @@ export class UserService {
     return this.toUserResponse(savedUser);
   }
 
-  async findAllUsers(): Promise<UserResponse[]> {
+  async findAllUsers(): Promise<UserListResponse> {
     const users = await this.userModel.find();
     const usersResponse = users.map(user => this.toUserResponse(user));
-    return {...usersResponse};
+    return {users:usersResponse};
   }
 
   async findOneUser(id: string): Promise<UserResponse> {
